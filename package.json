@@ -1,0 +1,84 @@
+{
+  "name": "@karamconnect/vue-family-tree",
+  "version": "1.0.0",
+  "description": "Vue 3 component for rendering interactive, draggable family trees",
+  "keywords": [
+    "vue",
+    "vue3",
+    "vue-component",
+    "family-tree",
+    "genealogy",
+    "tree",
+    "pan-zoom"
+  ],
+  "author": "Gabriel Sheeley",
+  "license": "MIT",
+  "homepage": "https://github.com/karamconnect/vue-family-tree",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karamconnect/vue-family-tree.git"
+  },
+  "bugs": {
+    "url": "https://github.com/karamconnect/vue-family-tree/issues"
+  },
+  "private": false,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "main": "./dist/vue-family-tree.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/vue-family-tree.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && vue-tsc -p tsconfig.build.json",
+    "build:demo": "vite build --mode demo",
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "type-check": "vue-tsc --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "test": "vitest run",
+    "lint:package": "publint",
+    "prepublishOnly": "pnpm test && pnpm build && pnpm lint:package"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/test-utils": "^2.5.1",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-vue": "~10.11.1",
+    "jiti": "^2.7.0",
+    "jsdom": "^30.1.2",
+    "publint": "^0.3.25",
+    "sass": "^1.105.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.4",
+    "vite-plugin-vue-devtools": "^8.2.1",
+    "vitest": "^5.0.4",
+    "vue": "^3.5.44",
+    "vue-tsc": "^3.3.13"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

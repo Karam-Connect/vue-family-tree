@@ -1,0 +1,46 @@
+name: Release
+
+# Publishes to npm when a GitHub Release is published (tag `vX.Y.Z` must match package.json).
+# Auth is npm trusted publishing (OIDC): no npm token is stored, and provenance is attached automatically.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # OIDC token for npm trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # Node 24 ships npm 11.x; trusted publishing needs npm >= 11.5.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      # No dependency cache in release builds (npm's trusted publishing guidance)
+      - uses: pnpm/action-setup@v6
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check tag matches package.json version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Release tag $TAG does not match package.json version $VERSION"
+            exit 1
+          fi
+
+      - run: pnpm lint
+      - run: pnpm type-check
+
+      # prepublishOnly runs test, build and publint before publishing
+      - run: npm publish
