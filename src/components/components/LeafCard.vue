@@ -32,7 +32,7 @@ import { cardStyleKey } from '../keys';
 import { isDeceased } from '../member';
 import DeceasedSymbol from './DeceasedSymbol.vue';
 import Lifespan from './Lifespan.vue';
-import type { CardStyleProps, FamilyMember } from '../../types';
+import type { CardStyleProps, FamilyMember } from '@/types.ts';
 
 // The built-in card: a square photo (or a grey square without one), the name, and the dates
 defineOptions({
