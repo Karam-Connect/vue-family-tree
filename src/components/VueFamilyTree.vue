@@ -1,17 +1,17 @@
 <template>
   <div
-    ref="viewportEl"
-    class="vue-family-tree"
-    :class="{ 'vue-family-tree_viewport': enableDrag }"
-    @mousedown="mousedown"
-    @mouseover="unlessPanning(() => emit('mouseover', $event))"
-    @mouseleave="unlessPanning(() => emit('mouseleave', $event))"
-    @touchstart="touchstart"
-    @touchmove="touchmove"
-    @touchend="touchend"
-    @touchcancel="touchend"
-    @wheel="wheel"
-    :style="{
+      ref="viewportEl"
+      class="vue-family-tree"
+      :class="{ 'vue-family-tree_viewport': enableDrag }"
+      @mousedown="mousedown"
+      @mouseover="unlessPanning(() => emit('mouseover', $event))"
+      @mouseleave="unlessPanning(() => emit('mouseleave', $event))"
+      @touchstart="touchstart"
+      @touchmove="touchmove"
+      @touchend="touchend"
+      @touchcancel="touchend"
+      @wheel="wheel"
+      :style="{
       cursor: mouse.dragging ? dragCursor : undefined,
       touchAction,
       '--vue-family-tree-line-color': lines.color,
@@ -23,8 +23,8 @@
     }"
   >
     <div
-      ref="contentEl"
-      :style="enableDrag ? {
+        ref="contentEl"
+        :style="enableDrag ? {
         position: 'absolute',
         top: 0,
         left: 0,
@@ -33,13 +33,15 @@
       } : undefined"
     >
       <VueFamilyTreeBranch :tree="tree" @card-click="member => unlessPanning(() => emit('card-click', member))">
-        <template #card="{ item }"><slot name="card" :item="item" /></template>
+        <template #card="{ item }">
+          <slot name="card" :item="item"/>
+        </template>
       </VueFamilyTreeBranch>
     </div>
     <div
-      v-if="enableDrag"
-      class="vue-family-tree__hint-region"
-      role="status"
+        v-if="enableDrag"
+        class="vue-family-tree__hint-region"
+        role="status"
     >
       <Transition name="vue-family-tree-hint">
         <div v-if="hintVisible" class="vue-family-tree__hint">
@@ -58,7 +60,7 @@ import VueFamilyTreeBranch from './components/Branch.vue';
 import { cardStyleKey, filterKey, labelsKey, partnersKey } from './keys';
 import { resolveLabels } from './member';
 import type {
-  FamilyNode, FamilyMember, FamilyTreeConfig, GestureHandling, GestureHintType, Position, ZoomConfig,
+  FamilyNode, FamilyMember, FamilyTreeConfig, GestureHandling, GestureHintType, Position, ZoomConfig
 } from '../types';
 
 defineOptions({
@@ -71,7 +73,7 @@ const props = withDefaults(defineProps<{
   config?: FamilyTreeConfig;
 }>(), {
   tree: () => [],
-  config: () => ({}),
+  config: () => ({})
 });
 
 // Config with defaults filled in
@@ -81,28 +83,28 @@ const dragThreshold = computed(() => props.config.drag?.threshold ?? 2);
 const gestureHandling = computed<GestureHandling>(() => props.config.gestures ?? 'auto');
 const zoom = computed<ZoomConfig>(() => props.config.zoom ?? {});
 const lines = computed(() => props.config.lines ?? {});
-const cssLength = (value?: number | string) => typeof value === 'number' ? `${value}px` : value;
+const cssLength = (value?: number | string) => typeof value === 'number' ? `${ value }px` : value;
 
 const emit = defineEmits<{
   /** A card was clicked or activated with the keyboard (not at the end of a pan) */
-  'card-click': [member: FamilyMember]
+  'card-click': [ member: FamilyMember ]
   /** A mouse or touch pan started, moved, or ended */
-  dragstart: [event: MouseEvent | TouchEvent]
-  drag: [event: MouseEvent | TouchEvent]
-  dragend: [event: MouseEvent | TouchEvent]
+  dragstart: [ event: MouseEvent | TouchEvent ]
+  drag: [ event: MouseEvent | TouchEvent ]
+  dragend: [ event: MouseEvent | TouchEvent ]
   /** The zoom level changed */
-  zoom: [scale: number]
+  zoom: [ scale: number ]
   /** `centerTree()` moved the tree */
   'center-map': []
   /** The pointer entered or left the tree (not reported while panning) */
-  mouseover: [event: MouseEvent]
-  mouseleave: [event: MouseEvent]
+  mouseover: [ event: MouseEvent ]
+  mouseleave: [ event: MouseEvent ]
 }>();
 
 provide(cardStyleKey, computed(() => ({
   cardClass: props.config.cards?.class,
   cardImageClass: props.config.cards?.imageClass,
-  cardNameClass: props.config.cards?.nameClass,
+  cardNameClass: props.config.cards?.nameClass
 })));
 
 provide(filterKey, computed(() => props.config.filter));
@@ -145,7 +147,7 @@ const unlessPanning = (report: () => void) => {
 
 // `auto` is resolved against the page, which only exists in the browser
 const gestureMode = ref<Exclude<GestureHandling, 'auto'>>(
-  gestureHandling.value === 'auto' ? 'cooperative' : gestureHandling.value
+    gestureHandling.value === 'auto' ? 'cooperative' : gestureHandling.value
 );
 const isMac = ref(false);
 const hintVisible = ref(false);
@@ -230,7 +232,7 @@ const toWrapperPoint = (clientX: number, clientY: number): Position => {
 };
 
 const positiveOr = (value: number | undefined, fallback: number) =>
-  value !== undefined && Number.isFinite(value) && value > 0 ? value : fallback;
+    value !== undefined && Number.isFinite(value) && value > 0 ? value : fallback;
 
 // Scale must stay finite and > 0: zooming divides by the current scale
 const zoomBounds = computed(() => {
@@ -332,15 +334,15 @@ let touchPanning = false;
 
 // `event.touches` includes fingers anywhere on the page; only count the ones that started on the tree
 const treeTouches = (event: TouchEvent) =>
-  Array.from(event.touches).filter(touch => viewportEl.value?.contains(touch.target as Node));
+    Array.from(event.touches).filter(touch => viewportEl.value?.contains(touch.target as Node));
 
 const readTouches = (touches: Touch[]): TouchState => {
-  const [a, b] = touches;
+  const [ a, b ] = touches;
   if (!b) return { x: a.clientX, y: a.clientY, distance: 0 };
   return {
     x: (a.clientX + b.clientX) / 2,
     y: (a.clientY + b.clientY) / 2,
-    distance: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY),
+    distance: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY)
   };
 };
 
@@ -402,7 +404,7 @@ const touchend = (event: TouchEvent) => {
 };
 
 // Turning gestures off mid-pan ends the pan instead of leaving it half-active
-watch([enableDrag, gestureMode], ([enabled, mode]) => {
+watch([ enableDrag, gestureMode ], ([ enabled, mode ]) => {
   if (enabled && mode !== 'none') return;
   endMouseDrag(null);
   endTouchPan(null);

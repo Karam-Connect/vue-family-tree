@@ -9,8 +9,8 @@
     >
       <template v-if="nested">
         <!-- This family's stretch of the bar joining the siblings, and the stub from it down to the family -->
-        <span class="vue-family-tree__bar" aria-hidden="true" />
-        <span class="vue-family-tree__stub" aria-hidden="true" />
+        <span class="vue-family-tree__bar" aria-hidden="true"/>
+        <span class="vue-family-tree__stub" aria-hidden="true"/>
       </template>
 
       <template v-if="family.layout !== 'chain'">
@@ -21,11 +21,13 @@
           <template v-for="(person, personIndex) in family.people" :key="person.id">
             <!-- Between partners: their line, and the drop to their children from its middle -->
             <span v-if="personIndex === 1" class="vue-family-tree__union-line">
-              <span class="vue-family-tree__union-status" role="img" :title="labels.relationships.married" />
-              <span v-if="family.children.length" class="vue-family-tree__union-drop" aria-hidden="true" />
+              <span class="vue-family-tree__union-status" role="img" :title="labels.relationships.married"/>
+              <span v-if="family.children.length" class="vue-family-tree__union-drop" aria-hidden="true"/>
             </span>
             <VueFamilyTreePerson :person="person" :placeholder="placeholder(person)" @card-click="handleCardClick">
-              <template #card="{ item: member }"><slot name="card" :item="member" /></template>
+              <template #card="{ item: member }">
+                <slot name="card" :item="member"/>
+              </template>
             </VueFamilyTreePerson>
           </template>
           <!-- A single parent's line to the children leaves from under the card -->
@@ -36,7 +38,9 @@
           />
         </div>
         <VueFamilyTreeBranch v-if="family.children.length" nested :tree="family.children" @card-click="handleCardClick">
-          <template #card="{ item: member }"><slot name="card" :item="member" /></template>
+          <template #card="{ item: member }">
+            <slot name="card" :item="member"/>
+          </template>
         </VueFamilyTreeBranch>
       </template>
 
@@ -49,7 +53,9 @@
             :placeholder="placeholder(family.person)"
             @card-click="handleCardClick"
         >
-          <template #card="{ item: member }"><slot name="card" :item="member" /></template>
+          <template #card="{ item: member }">
+            <slot name="card" :item="member"/>
+          </template>
         </VueFamilyTreePerson>
         <div class="vue-family-tree__unions">
           <div
@@ -63,8 +69,8 @@
               <bdi v-if="union.dates" class="vue-family-tree__union-dates">{{ union.dates }}</bdi>
               <!-- A strip along the line: the status name as tooltip and screen-reader name, and the genogram
                    marks (/ separated, // divorced) -->
-              <span class="vue-family-tree__union-status" role="img" :title="labels.relationships[union.relationship]" />
-              <span v-if="union.hasChildren" class="vue-family-tree__union-drop" aria-hidden="true" />
+              <span class="vue-family-tree__union-status" role="img" :title="labels.relationships[union.relationship]"/>
+              <span v-if="union.hasChildren" class="vue-family-tree__union-drop" aria-hidden="true"/>
             </div>
             <VueFamilyTreePerson
                 :person="union.partner ?? family.person"
@@ -72,7 +78,9 @@
                 :unknown="!union.partner"
                 @card-click="handleCardClick"
             >
-              <template #card="{ item: member }"><slot name="card" :item="member" /></template>
+              <template #card="{ item: member }">
+                <slot name="card" :item="member"/>
+              </template>
             </VueFamilyTreePerson>
             <VueFamilyTreeBranch
                 v-if="union.hasChildren"
@@ -81,7 +89,9 @@
                 :tree="union.children"
                 @card-click="handleCardClick"
             >
-              <template #card="{ item: member }"><slot name="card" :item="member" /></template>
+              <template #card="{ item: member }">
+                <slot name="card" :item="member"/>
+              </template>
             </VueFamilyTreeBranch>
           </div>
         </div>
@@ -95,7 +105,7 @@ import { computed, inject } from 'vue';
 import VueFamilyTreePerson from './FamilyPerson.vue';
 import { filterKey, labelsKey, partnersKey } from '../keys';
 import { defaultLabels, unionDates } from '../member';
-import type { FamilyNode, FamilyMember, RelationshipStatus } from '../../types';
+import type { FamilyNode, FamilyMember, RelationshipStatus } from '@/types.ts';
 
 defineOptions({
   name: 'VueFamilyTreeBranch'
@@ -119,7 +129,7 @@ const placeholder = (person: FamilyMember) => filter.value?.(person) === 'card'
 // A node with `partners` is drawn as a chain: its first person, then one union per partner. So is a couple with a
 // status mark or dates, which the classic couple's short line has no room for.
 const hasUnionDetails = (node: FamilyNode) =>
-  (!!node.relationship && node.relationship !== 'married') || node.start != null || node.end != null
+    (!!node.relationship && node.relationship !== 'married') || node.start != null || node.end != null
 const isChain = (node: FamilyNode) => !!node.firstPerson && (!!node.partners?.length || hasUnionDetails(node))
 
 interface Union {
@@ -138,31 +148,31 @@ interface Union {
 const unionsOf = (node: FamilyNode): Union[] => {
   const unions = [
     ...(node.secondPerson || node.children?.length
-      ? [{ ...node, partner: node.secondPerson }]
-      : []),
+        ? [ { ...node, partner: node.secondPerson } ]
+        : []),
     ...(node.partners ?? []).filter(partnership => !partnership.hidden).map(partnership => ({
-      ...partnership, partner: partnership.person,
-    })),
+      ...partnership, partner: partnership.person
+    }))
   ]
   const showFormer = partners.value?.showFormer ?? true
   return unions
-    .filter(union => showFormer || (union.relationship !== 'separated' && union.relationship !== 'divorced'))
-    .filter(union => !union.partner || shown(union.partner))
-    .map(union => {
-      const children = union.children ?? []
-      const relationship = union.relationship ?? 'married'
-      return {
-        partner: union.partner,
-        relationship,
-        dates: unionDates({ relationship, start: union.start, end: union.end }, labels.value),
-        children,
-        hasChildren: children.some(isVisible),
-      }
-    })
+      .filter(union => showFormer || (union.relationship !== 'separated' && union.relationship !== 'divorced'))
+      .filter(union => !union.partner || shown(union.partner))
+      .map(union => {
+        const children = union.children ?? []
+        const relationship = union.relationship ?? 'married'
+        return {
+          partner: union.partner,
+          relationship,
+          dates: unionDates({ relationship, start: union.start, end: union.end }, labels.value),
+          children,
+          hasChildren: children.some(isVisible)
+        }
+      })
 }
 
 const visiblePeople = (node: FamilyNode) =>
-  [node.firstPerson, node.secondPerson].filter((person): person is FamilyMember => !!person && shown(person))
+    [ node.firstPerson, node.secondPerson ].filter((person): person is FamilyMember => !!person && shown(person))
 
 // Hidden nodes take their whole subtree with them, as do nodes whose people are all hidden. A node of only
 // placeholders goes too unless it still has children to hold in place. A node that never had people (grouping
@@ -172,7 +182,7 @@ const isVisible = (node: FamilyNode): boolean => {
   if (isChain(node)) {
     if (!shown(node.firstPerson!)) return false
     return !placeholder(node.firstPerson!) || unionsOf(node).some(union =>
-      (union.partner && !placeholder(union.partner)) || union.hasChildren)
+        (union.partner && !placeholder(union.partner)) || union.hasChildren)
   }
   if (!(node.firstPerson || node.secondPerson)) return true
   const people = visiblePeople(node)
@@ -192,7 +202,7 @@ const families = computed(() => props.tree.filter(isVisible).map(node => {
     node,
     layout: people.length === 2 ? 'couple' as const : 'single' as const,
     people,
-    children: hasVisibleChildren(node) ? node.children! : [],
+    children: hasVisibleChildren(node) ? node.children! : []
   }
 }))
 
@@ -209,7 +219,7 @@ defineSlots<{
 }>();
 
 const emit = defineEmits<{
-  'card-click': [member: FamilyMember, event: MouseEvent]
+  'card-click': [ member: FamilyMember, event: MouseEvent ]
 }>()
 
 const handleCardClick = (member: FamilyMember, event: MouseEvent) => {

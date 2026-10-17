@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import LeafCard from './LeafCard.vue';
 import { isDeceased } from '../member';
-import type { FamilyMember } from '../../types';
+import type { FamilyMember } from '@/types.ts';
 
 defineOptions({
   name: 'VueFamilyTreePerson'
@@ -65,5 +65,14 @@ const emit = defineEmits<{
   visibility: visible;
   border: 1px dashed var(--vue-family-tree-line-color, #ddd);
   border-radius: 4px;
+}
+
+// On a default card the outline covers only the photo square, matching the other cards' boxes; a custom card is
+// outlined whole, since its own box is the whole card
+:where(.vue-family-tree__person_filtered, .vue-family-tree__person_unknown)
+  > :where(.vue-family-tree__card:has(> .vue-family-card))::after {
+  bottom: auto;
+  height: var(--vue-family-tree-card-width, 100px);
+  box-sizing: border-box;
 }
 </style>

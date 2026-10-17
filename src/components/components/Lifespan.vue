@@ -6,7 +6,7 @@
 import { computed, inject } from 'vue';
 import { labelsKey } from '../keys';
 import { defaultLabels, lifespan } from '../member';
-import type { FamilyMember } from '../../types';
+import type { FamilyMember } from '@/types.ts';
 
 defineOptions({
   name: 'VueFamilyTreeLifespan'
