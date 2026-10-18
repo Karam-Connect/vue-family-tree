@@ -1,0 +1,88 @@
+# CI for pull requests: lint, type-check, test and build (+ publint) run in parallel after one shared install.
+# Run it locally without pushing: `rwx run .rwx/ci.yml --open`
+on:
+  github:
+    pull_request:
+      init:
+        commit-sha: ${{ event.git.sha }}
+        pr-number: ${{ event.github.pull_request.number }}
+      # One check per task, named like the old GitHub Actions jobs, so the `main` ruleset can require them
+      status-checks:
+        default:
+          name: CI
+        custom:
+          - tasks: lint
+            name: lint
+          - tasks: type-check
+            name: type-check
+          - tasks: test
+            name: test
+          - tasks: [build, lint-package]
+            name: build
+  cli:
+    init:
+      commit-sha: ${{ event.git.sha }}
+      pr-number: local
+
+# A new push to the same PR cancels the run still in progress
+concurrency-pools:
+  - id: karam-connect/vue-family-tree:pr-${{ init.pr-number }}
+    capacity: 1
+    on-overflow: cancel-running
+
+base:
+  image: ubuntu:24.04
+  config: rwx/base 1.2.0
+
+tasks:
+  - key: code
+    call: git/clone 2.2.0
+    with:
+      repository: https://github.com/Karam-Connect/vue-family-tree.git
+      ref: ${{ init.commit-sha }}
+      # Public repo: no token needed, which also keeps fork PRs working
+
+  - key: node
+    call: nodejs/install 1.2.0
+    with:
+      node-version: "24.22.0"
+
+  # The pnpm version comes from `packageManager` in package.json
+  - key: pnpm
+    use: [code, node]
+    run: npm install -g "$(node -p "require('./package.json').packageManager")"
+    filter:
+      - package.json
+
+  - key: pnpm-install
+    use: pnpm
+    run: pnpm install --frozen-lockfile
+    filter:
+      - package.json
+      - pnpm-lock.yaml
+
+  - key: lint
+    use: pnpm-install
+    run: pnpm lint
+    timeout: 10m
+
+  - key: type-check
+    use: pnpm-install
+    run: pnpm type-check
+    timeout: 10m
+
+  - key: test
+    use: pnpm-install
+    run: pnpm test
+    timeout: 10m
+
+  - key: build
+    use: pnpm-install
+    run: pnpm build
+    timeout: 10m
+
+  # publint checks the built package's exports and file paths
+  - key: lint-package
+    use: build
+    run: pnpm lint:package
+    timeout: 10m
