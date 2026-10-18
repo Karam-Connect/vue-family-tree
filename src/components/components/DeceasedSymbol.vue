@@ -1,17 +1,17 @@
 <template>
   <svg
-    v-if="deceased"
-    class="vue-family-card__symbol"
-    :class="`vue-family-card__symbol_${shape}`"
-    viewBox="0 0 20 20"
-    role="img"
+      v-if="deceased"
+      class="vue-family-card__symbol"
+      :class="`vue-family-card__symbol_${shape}`"
+      viewBox="0 0 20 20"
+      role="img"
   >
     <!-- Hover tooltip and the screen-reader name in one; the tree's `deceased` label -->
     <title>{{ labels.deceased }}</title>
-    <rect v-if="shape === 'square'" x="3" y="3" width="14" height="14" />
-    <circle v-else-if="shape === 'circle'" cx="10" cy="10" r="7" />
-    <polygon v-else points="10,2.5 17.5,10 10,17.5 2.5,10" />
-    <path :d="shape === 'square' ? 'M1 1L19 19M19 1L1 19' : 'M4 4L16 16M16 4L4 16'" />
+    <rect v-if="shape === 'square'" x="3" y="3" width="14" height="14"/>
+    <circle v-else-if="shape === 'circle'" cx="10" cy="10" r="7"/>
+    <polygon v-else points="10,2.5 17.5,10 10,17.5 2.5,10"/>
+    <path :d="shape === 'square' ? 'M1 1L19 19M19 1L1 19' : 'M4 4L16 16M16 4L4 16'"/>
   </svg>
 </template>
 

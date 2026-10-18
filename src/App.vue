@@ -36,6 +36,7 @@
         ref="treeRef"
         :key="locale.dir"
         :dir="locale.dir"
+        :lang="language"
         :tree="family"
         :config="config"
         :class="{ 'demo-tree_custom': customCards }"
@@ -44,18 +45,20 @@
       <template v-if="customCards" #card="{ item }">
         <button type="button" class="demo-card" @click="onCardClick(item)">
           <img v-if="item.image" class="demo-card__photo" :src="item.image" alt="" draggable="false">
-          <span v-else class="demo-card__photo demo-card__photo_empty" />
+          <span v-else class="demo-card__photo demo-card__photo_empty"/>
           <span class="demo-card__text">
             <!-- The default card's symbol and dates, exported for custom cards; they follow the tree's labels -->
-            <strong class="demo-card__name"><VueFamilyTreeDeceasedSymbol :member="item" />{{ item.name }}</strong>
-            <VueFamilyTreeLifespan :member="item" class="demo-card__meta" />
+            <strong class="demo-card__name"><VueFamilyTreeDeceasedSymbol :member="item"/>{{ item.name }}</strong>
+            <VueFamilyTreeLifespan :member="item" class="demo-card__meta"/>
             <span v-if="item.hometown" class="demo-card__meta">{{ item.hometown }}</span>
           </span>
         </button>
       </template>
     </VueFamilyTree>
 
-    <p class="demo__status" aria-live="polite">{{ selected ? `Selected: ${selected}` : 'Click a card to select it' }}</p>
+    <p class="demo__status" aria-live="polite">{{
+        selected ? `Selected: ${ selected }` : 'Click a card to select it'
+      }}</p>
   </main>
 </template>
 
@@ -81,31 +84,46 @@ const locales: Record<string, { name: string, dir: 'ltr' | 'rtl', labels?: Famil
       divorced: 'gesch.',
       relationships: { married: 'Verheiratet', partners: 'Partner', separated: 'Getrennt', divorced: 'Geschieden' },
       touchHint: 'Mit zwei Fingern verschieben',
-      wheelHint: key => `${key} + Mausrad zum Zoomen`,
-    },
+      wheelHint: key => `${ key } + Mausrad zum Zoomen`
+    }
+  },
+  ru: {
+    name: 'Русский',
+    dir: 'ltr',
+    labels: {
+      deceased: 'Умер(ла)',
+      born: 'род.',
+      died: 'ум.',
+      married: 'брак',
+      separated: 'разъезд',
+      divorced: 'развод',
+      relationships: { married: 'В браке', partners: 'Партнёры', separated: 'Живут раздельно', divorced: 'В разводе' },
+      touchHint: 'Перемещайте дерево двумя пальцами',
+      wheelHint: key => `Масштаб: ${ key } + колесо мыши`
+    }
   },
   ar: {
     name: 'العربية',
     dir: 'rtl',
     labels: {
       deceased: 'متوفى',
-      born: year => `مواليد ${toArabicDigits(year)}`,
-      died: year => `توفي ${toArabicDigits(year)}`,
-      lifespan: (born, died) => `${toArabicDigits(born)}–${toArabicDigits(died)}`,
-      married: year => `زواج ${toArabicDigits(year)}`,
-      separated: year => `انفصال ${toArabicDigits(year)}`,
-      divorced: year => `طلاق ${toArabicDigits(year)}`,
+      born: year => `مواليد ${ toArabicDigits(year) }`,
+      died: year => `توفي ${ toArabicDigits(year) }`,
+      lifespan: (born, died) => `${ toArabicDigits(born) }–${ toArabicDigits(died) }`,
+      married: year => `زواج ${ toArabicDigits(year) }`,
+      separated: year => `انفصال ${ toArabicDigits(year) }`,
+      divorced: year => `طلاق ${ toArabicDigits(year) }`,
       relationships: { married: 'متزوجان', partners: 'شريكان', separated: 'منفصلان', divorced: 'مطلقان' },
       touchHint: 'استخدم إصبعين لتحريك الشجرة',
-      wheelHint: key => `استخدم ${key} + التمرير للتكبير`,
-    },
-  },
+      wheelHint: key => `استخدم ${ key } + التمرير للتكبير`
+    }
+  }
 };
 const language = ref('en');
 const locale = computed(() => locales[language.value]!);
 
-const lineStyles: LineStyle[] = ['solid', 'dashed', 'dotted', 'thick'];
-const gestureModes: GestureHandling[] = ['auto', 'cooperative', 'greedy', 'none'];
+const lineStyles: LineStyle[] = [ 'solid', 'dashed', 'dotted', 'thick' ];
+const gestureModes: GestureHandling[] = [ 'auto', 'cooperative', 'greedy', 'none' ];
 const lineStyle = ref<LineStyle>('solid');
 const gestures = ref<GestureHandling>('auto');
 
@@ -117,7 +135,7 @@ const toggles = [
   { label: 'Custom cards', model: customCards },
   { label: 'Show hidden', model: showHidden },
   { label: 'Show deceased', model: showDeceased },
-  { label: 'Show former partners', model: showFormer },
+  { label: 'Show former partners', model: showFormer }
 ];
 
 const treeRef = useTemplateRef('treeRef');
@@ -134,7 +152,7 @@ const config = computed<FamilyTreeConfig>(() => ({
   // Living only: deceased people leave an empty placeholder, so partners and descendants stay in place
   filter: showDeceased.value ? undefined : person => (isDeceased(person) ? 'card' : true),
   // Separated and divorced partners, with their children
-  partners: { showFormer: showFormer.value },
+  partners: { showFormer: showFormer.value }
 }));
 
 const selected = ref('');
@@ -175,6 +193,12 @@ body {
   &__zoom {
     display: inline-flex;
     gap: 4px;
+
+    // At least 24 × 24 px to tap (WCAG 2.2 target size)
+    button {
+      min-width: 32px;
+      min-height: 32px;
+    }
   }
 
   &__status {

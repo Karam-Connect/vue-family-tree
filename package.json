@@ -49,6 +49,7 @@
     "type-check": "vue-tsc --noEmit && tsc -p tsconfig.node.json --noEmit",
     "test": "vitest run",
     "lint:package": "publint",
+    "release:notes": "node scripts/release-notes.mjs",
     "prepublishOnly": "pnpm test && pnpm build && pnpm lint:package"
   },
   "peerDependencies": {

@@ -13,9 +13,9 @@ export { isDeceased }
 export default VueFamilyTree
 
 export const VueFamilyTreePlugin = {
-  install(app: App) {
-    app.component('VueFamilyTree', VueFamilyTree)
-    app.component('VueFamilyTreeDeceasedSymbol', VueFamilyTreeDeceasedSymbol)
-    app.component('VueFamilyTreeLifespan', VueFamilyTreeLifespan)
-  },
+    install(app: App) {
+        app.component('VueFamilyTree', VueFamilyTree)
+        app.component('VueFamilyTreeDeceasedSymbol', VueFamilyTreeDeceasedSymbol)
+        app.component('VueFamilyTreeLifespan', VueFamilyTreeLifespan)
+    }
 }
