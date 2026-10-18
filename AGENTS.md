@@ -25,10 +25,15 @@ Tests: jsdom can't build `TouchEvent`s with touch points; `gestures.spec.ts` dis
 
 ## Releasing
 
-- `.github/workflows/release.yml` publishes to npm when a GitHub Release is published. The tag must be `v` + the `package.json` version. Auth is npm trusted publishing (OIDC, `id-token: write`, npm >= 11.5.1); no npm token exists, and provenance is automatic. The release build skips dependency caching on purpose (npm guidance).
-- The first publish has to be manual (`npm login`, then `pnpm publish`), because a trusted publisher is configured from an existing package's settings on npmjs.com (repo `Karam-Connect/vue-family-tree`, workflow `release.yml`).
+1. Feature/fix PRs add entries under `## [Unreleased]` in `CHANGELOG.md` (Keep a Changelog); they don't touch `version`.
+2. A release PR (`chore(release): X.Y.Z`) bumps `version` in `package.json` (semver) and renames `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, adding a fresh empty `[Unreleased]` above it and a `[X.Y.Z]: …/releases/tag/vX.Y.Z` link at the bottom. Preview the notes with `pnpm release:notes`.
+3. After it merges: `git tag vX.Y.Z && git push origin vX.Y.Z` on `main`. Don't create the GitHub Release by hand.
+
+`.github/workflows/release.yml` runs on the `v*` tag push: it checks the tag equals `v` + `package.json`'s version and that `CHANGELOG.md` has notes for it (`scripts/release-notes.mjs`, tested in `scripts/__tests__/`), publishes to npm, then creates the GitHub Release with that CHANGELOG section as notes. A version with a `-` (`1.2.0-beta.1`) goes to the npm dist-tag `next` and becomes a GitHub pre-release. A version already on npm skips the publish, so re-pushing a tag (or tagging the hand-published 1.0.0) only creates/updates the Release. Both steps are one workflow because a release created with `GITHUB_TOKEN` doesn't trigger other workflows.
+
+- npm auth is trusted publishing (OIDC, `id-token: write`, npm >= 11.5.1); no npm token exists, and provenance is automatic. The release build skips dependency caching on purpose (npm guidance). The trusted publisher on npmjs.com names the workflow file, so don't rename `release.yml`.
+- The first publish has to be manual (`npm login`, then `pnpm publish --access public`), because a trusted publisher is configured from an existing package's settings on npmjs.com (repo `Karam-Connect/vue-family-tree`, workflow `release.yml`).
 - `prepublishOnly` runs test, build and publint, so a manual publish can't ship a stale `dist/`.
-- Before tagging: bump `version` in `package.json`, and move `CHANGELOG.md`'s `[Unreleased]` entries into a dated version section (Keep a Changelog).
 - `.github/workflows/demo.yml` deploys `pnpm build:demo` to GitHub Pages on every push to `main` (needs Pages source set to "GitHub Actions").
 - `vue` peer range is `^3.5.0`: the `.d.ts` files emitted with Vue 3.5 tooling break type checking on Vue 3.4 (`TS2707` on `DefineComponent`), although runtime works there.
 
