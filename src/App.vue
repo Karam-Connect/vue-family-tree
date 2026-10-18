@@ -36,6 +36,7 @@
         ref="treeRef"
         :key="locale.dir"
         :dir="locale.dir"
+        :lang="language"
         :tree="family"
         :config="config"
         :class="{ 'demo-tree_custom': customCards }"
@@ -192,6 +193,12 @@ body {
   &__zoom {
     display: inline-flex;
     gap: 4px;
+
+    // At least 24 × 24 px to tap (WCAG 2.2 target size)
+    button {
+      min-width: 32px;
+      min-height: 32px;
+    }
   }
 
   &__status {

@@ -105,7 +105,7 @@ import { computed, inject } from 'vue';
 import VueFamilyTreePerson from './FamilyPerson.vue';
 import { filterKey, labelsKey, partnersKey } from '../keys';
 import { defaultLabels, unionDates } from '../member';
-import type { FamilyNode, FamilyMember, RelationshipStatus } from '@/types.ts';
+import type { FamilyNode, FamilyMember, RelationshipStatus } from '../../types';
 
 defineOptions({
   name: 'VueFamilyTreeBranch'
@@ -235,6 +235,9 @@ $line-width: calc(var(--vue-family-tree-line-width, 1px) * var(--_vft-line-scale
 $line-style: var(--vue-family-tree-line-style, solid);
 // Unmarried partners: dashed, or dotted on a dashed tree (set on the root), so they always stand out
 $partners-line-style: var(--vue-family-tree-partners-line-style, var(--_vft-partners-line-style, dashed));
+// Lines that carry meaning (the / and // marks, the unmarried partners' line) are darker than the plain connectors,
+// 4.5:1 against white, so they stay readable (WCAG non-text contrast)
+$mark-color: var(--vue-family-tree-mark-color, #767676);
 // Every position below is the line's 1px position; a wider line is pulled back by half its extra width, so it stays
 // centered on the same axis
 $line-shift: calc(($line-width - 1px) / 2);
@@ -433,6 +436,7 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
 
   .vue-family-tree__union_partners > &::before {
     border-top-style: $partners-line-style;
+    border-top-color: $mark-color;
   }
 
   .vue-family-tree__union_children > & {
@@ -494,7 +498,7 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
       inset-inline-start: calc(var(--_vft-mark-at) - #{$line-shift} + var(--_vft-mark-offset, 0px));
       height: 12px;
       box-sizing: content-box;
-      border-inline-start: $line-width solid $line-color;
+      border-inline-start: $line-width solid $mark-color;
       transform: rotate(25deg);
     }
   }
@@ -512,7 +516,7 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
     inset-inline-start: calc(var(--_vft-mark-at) - #{$line-shift} + 2px + #{$line-width});
     height: 12px;
     box-sizing: content-box;
-    border-inline-start: $line-width solid $line-color;
+    border-inline-start: $line-width solid $mark-color;
     transform: rotate(25deg);
   }
 }
@@ -522,6 +526,6 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
 // Unscoped + :where() = zero specificity, so any user class restyles the dates between partners
 :where(.vue-family-tree__union-dates) {
   font-size: 11px;
-  color: #888;
+  color: #666;
 }
 </style>

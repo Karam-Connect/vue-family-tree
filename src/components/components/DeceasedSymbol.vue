@@ -19,7 +19,7 @@
 import { computed, inject } from 'vue';
 import { labelsKey } from '../keys';
 import { defaultLabels, isDeceased, symbolShape } from '../member';
-import type { FamilyMember } from '@/types.ts';
+import type { FamilyMember } from '../../types';
 
 // Genogram deceased symbol: the person's shape crossed by an X that runs slightly past it. Renders nothing for the
 // living. The svg is the only root node, so a class or style given to the component lands on it.

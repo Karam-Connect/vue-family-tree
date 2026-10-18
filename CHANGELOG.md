@@ -13,6 +13,7 @@ the list below compares it with that package.
 
 ### Added
 
+- Tabbing to a card outside the view pans the tree to it.
 - Default cards are a single `<button>` with an `<img>`: one tab stop, keyboard activation, and the name and
   dates as its accessible name.
 - Siblings render as a list (`<ul>` / `<li>`), with the connector lines as their own hidden elements.
@@ -37,7 +38,8 @@ the list below compares it with that package.
   each union's children hang from its own stretch of the line
   ([upstream #2](https://github.com/walkerz88/vue-family-tree/issues/2)).
 - Relationship status on the line between partners, genogram style: `/` separated, `//` divorced, dashed (or dotted
-  on a dashed tree) for unmarried partners, with the status name as tooltip. `start` / `end` dates on partnerships
+  on a dashed tree) for unmarried partners, with the status name as tooltip. Marks and the partners' line use the
+  darker `--vue-family-tree-mark-color` (default `#767676`) for contrast. `start` / `end` dates on partnerships
   (and on the node for `secondPerson`) show above the line as `m. 1980 · div. 1996`. New labels: `married`,
   `separated`, `divorced` and `relationships`.
 - `config.partners.showFormer`: `false` hides all separated and divorced partners, with their children.

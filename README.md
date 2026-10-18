@@ -133,8 +133,9 @@ const yusuf: FamilyNode = {
 - **`relationship`** is `'married'` (default), `'partners'`, `'separated'` or `'divorced'`; set it on a partnership,
   or on the node for the `secondPerson` union. The line shows it the genogram way: `/` across it for separated, `//`
   for divorced, dashed for unmarried partners (dotted on a dashed tree; set
-  `--vue-family-tree-partners-line-style` to choose). Hovering the line shows the status name, which screen readers
-  read too. Each union gets a `vue-family-tree__union_<relationship>` class.
+  `--vue-family-tree-partners-line-style` to choose). These marks and the partners' line are drawn darker than the
+  other lines (`#767676`, readable against white; set `--vue-family-tree-mark-color` to change it). Hovering the line
+  shows the status name, which screen readers read too. Each union gets a `vue-family-tree__union_<relationship>` class.
 - **`start` / `end`** date the relationship (year, ISO date or text, like `born`): the wedding and the separation or
   divorce, or when partners got together and parted. They show above the line as `m. 1980`, `m. 1990 · div. 1996`,
   `m. 1980–2010` (ended without a divorce) or `2001–` (partners), and the line grows to fit them. Restyle them with
@@ -285,7 +286,7 @@ With [vue-i18n](https://vue-i18n.intlify.dev/), build them from `t()`; they upda
 </script>
 
 <template>
-  <VueFamilyTree :key="dir" :tree="tree" :config="config" :dir="dir"/>
+  <VueFamilyTree :key="dir" :tree="tree" :config="config" :dir="dir" :lang="locale"/>
 </template>
 ```
 
@@ -293,7 +294,8 @@ With [vue-i18n](https://vue-i18n.intlify.dev/), build them from `t()`; they upda
 first partner of a couple sit on the right, and the pan/zoom viewport starts right-aligned. Put `dir="ltr"` on the
 component to keep a left-to-right tree in an RTL page. The viewport picks its starting position when it mounts, so
 key the component on the direction if it can change at runtime (as above). Names keep their own direction (a Latin
-name in an Arabic page, or the reverse), and date text with letters such as `'c. 1900'` is isolated too.
+name in an Arabic page, or the reverse), and date text with letters such as `'c. 1900'` is isolated too. Set `lang` along with `dir` when the tree's
+language differs from the page's, so screen readers pronounce the labels correctly.
 
 ### Styling
 

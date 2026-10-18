@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import LeafCard from './LeafCard.vue';
 import { isDeceased } from '../member';
-import type { FamilyMember } from '@/types.ts';
+import type { FamilyMember } from '../../types';
 
 defineOptions({
   name: 'VueFamilyTreePerson'

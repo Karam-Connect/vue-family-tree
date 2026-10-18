@@ -11,6 +11,7 @@
       @touchend="touchend"
       @touchcancel="touchend"
       @wheel="wheel"
+      @scroll="viewportScroll"
       :style="{
       cursor: mouse.dragging ? dragCursor : undefined,
       touchAction,
@@ -410,6 +411,18 @@ watch([ enableDrag, gestureMode ], ([ enabled, mode ]) => {
   endTouchPan(null);
 });
 
+// Tabbing to a card outside the view makes the browser scroll the clipped viewport to it. Pan by that amount instead
+// and undo the scroll, so `position` stays the only offset and centering, zoom and pinch math stay right.
+// `-scrollLeft` is the visual shift in both directions (RTL scroll offsets are negative).
+const viewportScroll = () => {
+  const viewport = viewportEl.value;
+  if (!enableDrag.value || !viewport || (!viewport.scrollLeft && !viewport.scrollTop)) return;
+  position.x -= viewport.scrollLeft;
+  position.y -= viewport.scrollTop;
+  viewport.scrollLeft = 0;
+  viewport.scrollTop = 0;
+};
+
 /** On-screen box of the tree itself (zoom included) */
 const getTreeClientRect = () => contentEl.value?.getBoundingClientRect();
 
@@ -460,7 +473,7 @@ defineExpose({ centerTree, getTreeClientRect, getWrapperClientRect, setZoom, zoo
     height: 100%;
     padding: 16px;
     box-sizing: border-box;
-    background-color: rgba(#000, .45);
+    background-color: rgba(#000, .65);
     color: #fff;
     font-size: 18px;
     text-align: center;
