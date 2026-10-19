@@ -3,6 +3,8 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "types": [
       "node"
     ]
