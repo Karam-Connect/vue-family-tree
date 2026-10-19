@@ -133,8 +133,9 @@ const yusuf: FamilyNode = {
 - **`relationship`** is `'married'` (default), `'partners'`, `'separated'` or `'divorced'`; set it on a partnership,
   or on the node for the `secondPerson` union. The line shows it the genogram way: `/` across it for separated, `//`
   for divorced, dashed for unmarried partners (dotted on a dashed tree; set
-  `--vue-family-tree-partners-line-style` to choose). These marks and the partners' line are drawn darker than the
-  other lines (`#767676`, readable against white; set `--vue-family-tree-mark-color` to change it). Hovering the line
+  `--vue-family-tree-partners-line-style` to choose). These marks, the partners' line and the dashed outline of
+  placeholders are drawn darker than the other lines (`#767676`, readable against white; set
+  `--vue-family-tree-mark-color` to change it). Hovering the line
   shows the status name, which screen readers read too. Each union gets a `vue-family-tree__union_<relationship>` class.
 - **`start` / `end`** date the relationship (year, ISO date or text, like `born`): the wedding and the separation or
   divorce, or when partners got together and parted. They show above the line as `m. 1980`, `m. 1990 · div. 1996`,

@@ -148,7 +148,7 @@ const textOf = (item: LegendItem) => {
   width: 16px;
   height: 16px;
   box-sizing: border-box;
-  border: 1px dashed var(--vue-family-tree-line-color, #ddd);
+  border: $placeholder-outline;
   border-radius: 4px;
 }
 

@@ -51,6 +51,8 @@ const emit = defineEmits<{
 </script>
 
 <style lang="scss">
+@use '../styles/lines' as *;
+
 // Unscoped + :where() = zero specificity, so any user class restyles or removes the placeholder outline.
 // The card stays in the layout (same size) but is invisible; `inert` keeps it out of clicks and screen readers.
 :where(.vue-family-tree__person_filtered, .vue-family-tree__person_unknown) > :where(.vue-family-tree__card) {
@@ -63,7 +65,7 @@ const emit = defineEmits<{
   position: absolute;
   inset: 0;
   visibility: visible;
-  border: 1px dashed var(--vue-family-tree-line-color, #ddd);
+  border: $placeholder-outline;
   border-radius: 4px;
 }
 
