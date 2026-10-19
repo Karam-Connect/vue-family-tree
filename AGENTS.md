@@ -53,4 +53,4 @@ Connector lines are explicit, `aria-hidden` elements in `Branch.vue`, all border
 
 `@/` aliases `src/` (vite.config.ts + tsconfig.json), but don't use it in library code: `vue-tsc` doesn't rewrite paths in emitted `.d.ts`. Use relative imports under `src/components` and `src/types.ts`.
 
-Consumers import `@karamconnect/vue-family-tree` (default + named `VueFamilyTree`, `VueFamilyTreeDeceasedSymbol`, `VueFamilyTreeLifespan`, `VueFamilyTreePlugin`, all types) and `@karamconnect/vue-family-tree/style.css` (styles are extracted, not injected).
+Consumers import `@karamconnect/vue-family-tree` (default + named `VueFamilyTree`, `VueFamilyTreeDeceasedSymbol`, `VueFamilyTreeLifespan`, `VueFamilyTreeLegend`, `VueFamilyTreePlugin`, `isDeceased`, all types) and `@karamconnect/vue-family-tree/style.css` (styles are extracted, not injected).

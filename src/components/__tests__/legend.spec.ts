@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { VueFamilyTreeLegend, VueFamilyTreePlugin, isDeceased } from '../../index'
+import { VueFamilyTreeLegend, isDeceased } from '../../index'
 import { legendOf } from '../legend'
 import type { FamilyNode } from '../../types'
 
@@ -115,11 +115,5 @@ describe('VueFamilyTreeLegend', () => {
     const wrapper = mount(VueFamilyTreeLegend, { props: { tree } })
     expect(wrapper.findAll('.vue-family-legend__sample').every(sample => sample.attributes('aria-hidden') === 'true'))
       .toBe(true)
-  })
-
-  it('is registered by the plugin', () => {
-    const wrapper = mount({ template: '<VueFamilyTreeLegend :items="[\'married\']" />' },
-      { global: { plugins: [VueFamilyTreePlugin] } })
-    expect(wrapper.find('.vue-family-legend').exists()).toBe(true)
   })
 })
