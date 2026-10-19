@@ -56,6 +56,10 @@
       </template>
     </VueFamilyTree>
 
+    <!-- The key to the symbols, for touch and keyboard users who can't hover the lines; it gets the same tree and
+         config, so it lists only what the tree shows, in the same language and line style -->
+    <VueFamilyTreeLegend :tree="family" :config="config" :dir="locale.dir" :lang="language" class="demo__legend"/>
+
     <p class="demo__status" aria-live="polite">{{
         selected ? `Selected: ${ selected }` : 'Click a card to select it'
       }}</p>
@@ -64,7 +68,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useTemplateRef } from 'vue';
-import { VueFamilyTree, VueFamilyTreeDeceasedSymbol, VueFamilyTreeLifespan, isDeceased } from './index';
+import { VueFamilyTree, VueFamilyTreeDeceasedSymbol, VueFamilyTreeLegend, VueFamilyTreeLifespan, isDeceased } from './index';
 import { demoFamily } from './demoFamily';
 import type { FamilyMember, FamilyTreeConfig, FamilyTreeLabels, GestureHandling, LineStyle } from './types';
 
@@ -83,6 +87,7 @@ const locales: Record<string, { name: string, dir: 'ltr' | 'rtl', labels?: Famil
       separated: 'getr.',
       divorced: 'gesch.',
       relationships: { married: 'Verheiratet', partners: 'Partner', separated: 'Getrennt', divorced: 'Geschieden' },
+      placeholder: 'Unbekannt oder ausgeblendet',
       touchHint: 'Mit zwei Fingern verschieben',
       wheelHint: key => `${ key } + Mausrad zum Zoomen`
     }
@@ -98,6 +103,7 @@ const locales: Record<string, { name: string, dir: 'ltr' | 'rtl', labels?: Famil
       separated: 'разъезд',
       divorced: 'развод',
       relationships: { married: 'В браке', partners: 'Партнёры', separated: 'Живут раздельно', divorced: 'В разводе' },
+      placeholder: 'Неизвестно или скрыто',
       touchHint: 'Перемещайте дерево двумя пальцами',
       wheelHint: key => `Масштаб: ${ key } + колесо мыши`
     }
@@ -114,6 +120,7 @@ const locales: Record<string, { name: string, dir: 'ltr' | 'rtl', labels?: Famil
       separated: year => `انفصال ${ toArabicDigits(year) }`,
       divorced: year => `طلاق ${ toArabicDigits(year) }`,
       relationships: { married: 'متزوجان', partners: 'شريكان', separated: 'منفصلان', divorced: 'مطلقان' },
+      placeholder: 'غير معروف أو مخفي',
       touchHint: 'استخدم إصبعين لتحريك الشجرة',
       wheelHint: key => `استخدم ${ key } + التمرير للتكبير`
     }
@@ -199,6 +206,11 @@ body {
       min-width: 32px;
       min-height: 32px;
     }
+  }
+
+  &__legend {
+    justify-content: center;
+    margin-top: 12px;
   }
 
   &__status {

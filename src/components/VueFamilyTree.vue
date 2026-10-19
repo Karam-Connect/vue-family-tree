@@ -15,12 +15,7 @@
       :style="{
       cursor: mouse.dragging ? dragCursor : undefined,
       touchAction,
-      '--vue-family-tree-line-color': lines.color,
-      '--vue-family-tree-line-width': cssLength(lines.width),
-      '--vue-family-tree-line-style': lines.style === 'thick' ? 'solid' : lines.style,
-      '--_vft-line-scale': lines.style === 'thick' ? 3 : undefined,
-      '--_vft-partners-line-style': lines.style === 'dashed' ? 'dotted' : undefined,
-      '--vue-family-tree-card-width': cssLength(config.cards?.width),
+      ...lineVariables(config),
     }"
   >
     <div
@@ -60,6 +55,7 @@ import { ref, reactive, computed, watch, provide, onMounted, onBeforeUnmount } f
 import VueFamilyTreeBranch from './components/Branch.vue';
 import { cardStyleKey, filterKey, labelsKey, partnersKey } from './keys';
 import { resolveLabels } from './member';
+import { lineVariables } from './lines';
 import type {
   FamilyNode, FamilyMember, FamilyTreeConfig, GestureHandling, GestureHintType, Position, ZoomConfig
 } from '../types';
@@ -83,8 +79,6 @@ const dragCursor = computed(() => props.config.drag?.cursor ?? 'grabbing');
 const dragThreshold = computed(() => props.config.drag?.threshold ?? 2);
 const gestureHandling = computed<GestureHandling>(() => props.config.gestures ?? 'auto');
 const zoom = computed<ZoomConfig>(() => props.config.zoom ?? {});
-const lines = computed(() => props.config.lines ?? {});
-const cssLength = (value?: number | string) => typeof value === 'number' ? `${ value }px` : value;
 
 const emit = defineEmits<{
   /** A card was clicked or activated with the keyboard (not at the end of a pan) */

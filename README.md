@@ -133,8 +133,9 @@ const yusuf: FamilyNode = {
 - **`relationship`** is `'married'` (default), `'partners'`, `'separated'` or `'divorced'`; set it on a partnership,
   or on the node for the `secondPerson` union. The line shows it the genogram way: `/` across it for separated, `//`
   for divorced, dashed for unmarried partners (dotted on a dashed tree; set
-  `--vue-family-tree-partners-line-style` to choose). These marks and the partners' line are drawn darker than the
-  other lines (`#767676`, readable against white; set `--vue-family-tree-mark-color` to change it). Hovering the line
+  `--vue-family-tree-partners-line-style` to choose). These marks, the partners' line and the dashed outline of
+  placeholders are drawn darker than the other lines (`#767676`, readable against white; set
+  `--vue-family-tree-mark-color` to change it). Hovering the line
   shows the status name, which screen readers read too. Each union gets a `vue-family-tree__union_<relationship>` class.
 - **`start` / `end`** date the relationship (year, ISO date or text, like `born`): the wedding and the separation or
   divorce, or when partners got together and parted. They show above the line as `m. 1980`, `m. 1990 · div. 1996`,
@@ -223,7 +224,8 @@ A toggle is a ref and a `computed` config:
 Mark a person as deceased with `deceased: true` or a `died` date. The default card then shows the genogram symbol
 next to the name, a shape crossed by an X (hover it for a "Deceased" tooltip): a square for `gender: 'male'`, a circle
 for `'female'`, and a diamond for
-any other value or no gender. The photo turns greyscale.
+any other value or no gender. The photo turns greyscale. A [legend](#legend) explains the symbol where tooltips
+don't reach.
 
 `born` and `died` take a year, an ISO date (shown as its year) or text, and appear under the name genogram-style:
 
@@ -236,6 +238,38 @@ any other value or no gender. The photo turns greyscale.
 Restyle with `.vue-family-card_deceased`, `.vue-family-card__symbol` and `.vue-family-card__lifespan`. Custom `card`
 slots can use the same symbol and dates (see [Card](#card)), and `.vue-family-tree__person_deceased` wraps the card of
 every deceased person.
+
+### Legend
+
+The relationship marks and the deceased symbol explain themselves only in a tooltip, which touch and keyboard users
+never see. `VueFamilyTreeLegend` is a key to them, for you to place wherever it suits your layout (under the tree, in
+a collapsible panel, in a drawer on phones). Give it the tree's `tree` and `config`, and it lists only the symbols the
+tree actually shows, drawn in the same line style and named in the same language:
+
+```vue
+<script setup lang="ts">
+  import { VueFamilyTree, VueFamilyTreeLegend } from '@karamconnect/vue-family-tree';
+</script>
+
+<template>
+  <VueFamilyTree :tree="tree" :config="config"/>
+  <VueFamilyTreeLegend :tree="tree" :config="config"/>
+</template>
+```
+
+| Prop     | Type               | Description                                                                                 |
+|----------|--------------------|---------------------------------------------------------------------------------------------|
+| `tree`   | `FamilyNode[]`     | List the symbols this tree shows (after `hidden`, `filter` and `partners.showFormer`)       |
+| `config` | `FamilyTreeConfig` | The tree's config: `labels` for the text, `lines` for the samples, `filter` and `partners`   |
+| `items`  | `LegendItem[]`     | Exactly these entries, in this order, instead of the ones found in `tree`                    |
+
+Without `tree` or `items` it lists everything. The entries are `'married'`, `'partners'`, `'separated'`,
+`'divorced'`, `'deceased'` (with the shapes the tree uses) and `'placeholder'` (the dashed box of an unknown partner or
+a person filtered out with `'card'`); their text comes from the `relationships`, `deceased` and `placeholder`
+[labels](#languages-and-rtl). The legend is a `<ul class="vue-family-legend">`; restyle it and its
+`.vue-family-legend__item`, `__sample` and `__text` with plain classes. Line samples follow the
+`--vue-family-tree-line-*` variables, so set those on a common ancestor if you style the lines with CSS instead of
+`config.lines`. Pass `dir` and `lang` to it like to the tree.
 
 ### Languages and RTL
 
@@ -255,6 +289,7 @@ simple prefixes, and functions give full control over wording, word order and di
 | `separated`     | String (prefix) \| `(year) => String`            | `'sep.'` → `sep. 1990`                                                 |
 | `divorced`      | String (prefix) \| `(year) => String`            | `'div.'` → `div. 1990`                                                 |
 | `relationships` | `{ married?, partners?, separated?, divorced? }` | `'Married'`, `'Partners'`, `'Separated'`, `'Divorced'` (line tooltips) |
+| `placeholder`   | String                                           | `'Unknown or not shown'` ([legend](#legend) text of the dashed box)    |
 | `touchHint`     | String                                           | `'Use two fingers to move the tree'`                                   |
 | `wheelHint`     | String \| `(key) => String`                      | `` key => `Use ${key} + scroll to zoom` `` (key is `⌘` or `Ctrl`)      |
 
@@ -429,7 +464,7 @@ people).
 </template>
 ```
 
-Both are also registered globally by `VueFamilyTreePlugin`. Style them with `.vue-family-card__symbol` (sized to the
+Both are also registered globally by `VueFamilyTreePlugin`, as is `VueFamilyTreeLegend`. Style them with `.vue-family-card__symbol` (sized to the
 surrounding text, `1em`) and `.vue-family-card__lifespan` (an inline `span`).
 
 ### Hint

@@ -54,7 +54,7 @@ describe('exported card pieces', () => {
     const app = createApp(defineComponent({ render: () => null }))
     app.use(VueFamilyTreePlugin)
 
-    for (const name of ['VueFamilyTree', 'VueFamilyTreeDeceasedSymbol', 'VueFamilyTreeLifespan']) {
+    for (const name of ['VueFamilyTree', 'VueFamilyTreeDeceasedSymbol', 'VueFamilyTreeLifespan', 'VueFamilyTreeLegend']) {
       expect(app.component(name), name).toBeDefined()
     }
   })

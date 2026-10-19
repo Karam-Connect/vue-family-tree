@@ -57,6 +57,12 @@ export interface FamilyNode {
 export type RelationshipStatus = 'married' | 'partners' | 'separated' | 'divorced'
 
 /**
+ * An entry of `VueFamilyTreeLegend`: a relationship line, the deceased symbol, or the dashed placeholder of an
+ * unknown partner or a person filtered out with `'card'`
+ */
+export type LegendItem = RelationshipStatus | 'deceased' | 'placeholder'
+
+/**
  * One union of a node's `firstPerson` with a partner, and their children
  */
 export interface Partnership {
@@ -101,6 +107,11 @@ export interface FamilyTreeLabels {
     divorced?: string | ((year: string) => string)
     /** Names of the relationship statuses: the tooltip and screen-reader name of the line between partners */
     relationships?: Partial<Record<RelationshipStatus, string>>
+    /**
+     * Legend text for the dashed placeholder of an unknown partner or a person filtered out with `'card'`
+     * (default: `'Unknown or not shown'`)
+     */
+    placeholder?: string
     /** Cooperative-gesture hint on touch (default: `'Use two fingers to move the tree'`) */
     touchHint?: string
     /** Cooperative-gesture hint for the wheel; a function gets the modifier key, `'⌘'` or `'Ctrl'` */
