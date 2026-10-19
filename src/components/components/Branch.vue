@@ -105,7 +105,8 @@ import { computed, inject } from 'vue';
 import VueFamilyTreePerson from './FamilyPerson.vue';
 import { filterKey, labelsKey, partnersKey } from '../keys';
 import { defaultLabels, unionDates } from '../member';
-import type { FamilyNode, FamilyMember, RelationshipStatus } from '../../types';
+import { isChain, visibility } from '../visibility';
+import type { FamilyNode, FamilyMember } from '../../types';
 
 defineOptions({
   name: 'VueFamilyTreeBranch'
@@ -122,89 +123,29 @@ const filter = inject(filterKey, computed(() => undefined))
 const labels = inject(labelsKey, computed(() => defaultLabels))
 const partners = inject(partnersKey, computed(() => undefined))
 
-// `hidden` or a `false` filter removes a person; a `'card'` filter keeps their spot as a placeholder
-const shown = (person: FamilyMember) => !person.hidden && filter.value?.(person) !== false
-const placeholder = (person: FamilyMember) => filter.value?.(person) === 'card'
-
-// A node with `partners` is drawn as a chain: its first person, then one union per partner. So is a couple with a
-// status mark or dates, which the classic couple's short line has no room for.
-const hasUnionDetails = (node: FamilyNode) =>
-    (!!node.relationship && node.relationship !== 'married') || node.start != null || node.end != null
-const isChain = (node: FamilyNode) => !!node.firstPerson && (!!node.partners?.length || hasUnionDetails(node))
-
-interface Union {
-  /** Missing for children whose other parent isn't in the data */
-  partner?: FamilyMember
-  relationship: RelationshipStatus
-  /** Text above the line, e.g. `m. 1980 · div. 1990` */
-  dates: string
-  children: FamilyNode[]
-  hasChildren: boolean
-}
-
-// `secondPerson` / `children` are the first union, then `partners` in order. A union whose partner is hidden (or
-// filtered out with `false`) goes with its children; a `'card'` placeholder partner keeps them. With
-// `partners.showFormer: false`, separated and divorced unions go the same way.
-const unionsOf = (node: FamilyNode): Union[] => {
-  const unions = [
-    ...(node.secondPerson || node.children?.length
-        ? [ { ...node, partner: node.secondPerson } ]
-        : []),
-    ...(node.partners ?? []).filter(partnership => !partnership.hidden).map(partnership => ({
-      ...partnership, partner: partnership.person
-    }))
-  ]
-  const showFormer = partners.value?.showFormer ?? true
-  return unions
-      .filter(union => showFormer || (union.relationship !== 'separated' && union.relationship !== 'divorced'))
-      .filter(union => !union.partner || shown(union.partner))
-      .map(union => {
-        const children = union.children ?? []
-        const relationship = union.relationship ?? 'married'
-        return {
-          partner: union.partner,
-          relationship,
-          dates: unionDates({ relationship, start: union.start, end: union.end }, labels.value),
-          children,
-          hasChildren: children.some(isVisible)
-        }
-      })
-}
-
-const visiblePeople = (node: FamilyNode) =>
-    [ node.firstPerson, node.secondPerson ].filter((person): person is FamilyMember => !!person && shown(person))
-
-// Hidden nodes take their whole subtree with them, as do nodes whose people are all hidden. A node of only
-// placeholders goes too unless it still has children to hold in place. A node that never had people (grouping
-// siblings) still renders. In a chain, the first person anchors everything: hiding them hides the node.
-const isVisible = (node: FamilyNode): boolean => {
-  if (node.hidden) return false
-  if (isChain(node)) {
-    if (!shown(node.firstPerson!)) return false
-    return !placeholder(node.firstPerson!) || unionsOf(node).some(union =>
-        (union.partner && !placeholder(union.partner)) || union.hasChildren)
-  }
-  if (!(node.firstPerson || node.secondPerson)) return true
-  const people = visiblePeople(node)
-  if (!people.length) return false
-  return !people.every(placeholder) || hasVisibleChildren(node)
-}
-
-// A parent left without visible children draws as a leaf
-const hasVisibleChildren = (node: FamilyNode): boolean => !!node.children?.some(isVisible)
+// Who and what is drawn: `hidden`, `config.filter` and `partners.showFormer` (shared with the legend)
+const rules = computed(() => visibility({ filter: filter.value, showFormer: partners.value?.showFormer }))
+const placeholder = (person: FamilyMember) => rules.value.placeholder(person)
 
 // Each family is drawn one of three ways: one person, a couple side by side over their children, or a chain (the
 // person, then a line segment and partner per union, each union's children under its segment)
-const families = computed(() => props.tree.filter(isVisible).map(node => {
-  if (isChain(node)) return { node, layout: 'chain' as const, person: node.firstPerson!, unions: unionsOf(node) }
-  const people = visiblePeople(node)
-  return {
-    node,
-    layout: people.length === 2 ? 'couple' as const : 'single' as const,
-    people,
-    children: hasVisibleChildren(node) ? node.children! : []
-  }
-}))
+const families = computed(() => {
+  const { isVisible, unionsOf, visiblePeople, hasVisibleChildren } = rules.value
+  return props.tree.filter(isVisible).map(node => {
+    if (isChain(node)) {
+      // Each union with the text above its line, e.g. `m. 1980 · div. 1990`
+      const unions = unionsOf(node).map(union => ({ ...union, dates: unionDates(union, labels.value) }))
+      return { node, layout: 'chain' as const, person: node.firstPerson!, unions }
+    }
+    const people = visiblePeople(node)
+    return {
+      node,
+      layout: people.length === 2 ? 'couple' as const : 'single' as const,
+      people,
+      children: hasVisibleChildren(node) ? node.children! : []
+    }
+  })
+})
 
 // Where a family sits among its siblings decides how much of the siblings' bar it draws
 const placeOf = (index: number) => {
@@ -228,38 +169,13 @@ const handleCardClick = (member: FamilyMember, event: MouseEvent) => {
 </script>
 
 <style lang="scss" scoped>
-// Line color / width / style come from the root (config.lines or user CSS) and are inherited by every level.
-// `lines.style: 'thick'` sets --_vft-line-scale to draw solid lines three times as wide.
-$line-color: var(--vue-family-tree-line-color, #ddd);
-$line-width: calc(var(--vue-family-tree-line-width, 1px) * var(--_vft-line-scale, 1));
-$line-style: var(--vue-family-tree-line-style, solid);
-// Unmarried partners: dashed, or dotted on a dashed tree (set on the root), so they always stand out
-$partners-line-style: var(--vue-family-tree-partners-line-style, var(--_vft-partners-line-style, dashed));
-// Lines that carry meaning (the / and // marks, the unmarried partners' line) are darker than the plain connectors,
-// 4.5:1 against white, so they stay readable (WCAG non-text contrast)
-$mark-color: var(--vue-family-tree-mark-color, #767676);
-// Every position below is the line's 1px position; a wider line is pulled back by half its extra width, so it stays
-// centered on the same axis
-$line-shift: calc(($line-width - 1px) / 2);
+@use '../styles/lines' as *;
+
 // Cards are all one width (cards.width or user CSS); the spacing between them is a fixed 16px
 $card-width: var(--vue-family-tree-card-width, 100px);
 $gap: 16px;
 // How far down the card the line between partners runs: the middle of the default square photo
 $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2));
-
-// Lines are borders of zero-size boxes rather than filled boxes, so dashed and dotted styles apply. The border stays
-// outside the box even under a global `* { box-sizing: border-box }`.
-@mixin vertical-line {
-  width: 0;
-  box-sizing: content-box;
-  border-inline-start: $line-width $line-style $line-color;
-}
-
-@mixin horizontal-line {
-  height: 0;
-  box-sizing: content-box;
-  border-top: $line-width $line-style $line-color;
-}
 
 // A row of families, side by side, top-aligned. Below a parent, the first 16px is where the parent's line comes
 // down to the siblings' bar.
@@ -492,14 +408,8 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
     min-width: 3 * $gap;
 
     > .vue-family-tree__union-status::before {
-      content: '';
-      position: absolute;
-      top: 0;
+      @include mark;
       inset-inline-start: calc(var(--_vft-mark-at) - #{$line-shift} + var(--_vft-mark-offset, 0px));
-      height: 12px;
-      box-sizing: content-box;
-      border-inline-start: $line-width solid $mark-color;
-      transform: rotate(25deg);
     }
   }
 }
@@ -510,14 +420,8 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
   }
 
   &::after {
-    content: '';
-    position: absolute;
-    top: 0;
+    @include mark;
     inset-inline-start: calc(var(--_vft-mark-at) - #{$line-shift} + 2px + #{$line-width});
-    height: 12px;
-    box-sizing: content-box;
-    border-inline-start: $line-width solid $mark-color;
-    transform: rotate(25deg);
   }
 }
 </style>

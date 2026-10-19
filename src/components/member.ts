@@ -9,6 +9,7 @@ export const defaultLabels = {
   separated: 'sep.',
   divorced: 'div.',
   relationships: { married: 'Married', partners: 'Partners', separated: 'Separated', divorced: 'Divorced' },
+  placeholder: 'Unknown or not shown',
   touchHint: 'Use two fingers to move the tree',
   wheelHint: (key: string) => `Use ${key} + scroll to zoom`,
 } satisfies ResolvedLabels

@@ -1,0 +1,40 @@
+// Line drawing shared by the tree (Branch.vue) and the legend (Legend.vue), so the legend's samples match the tree.
+// Color / width / style come from the root (config.lines or user CSS) and are inherited by every level.
+// `lines.style: 'thick'` sets --_vft-line-scale to draw solid lines three times as wide.
+$line-color: var(--vue-family-tree-line-color, #ddd);
+$line-width: calc(var(--vue-family-tree-line-width, 1px) * var(--_vft-line-scale, 1));
+$line-style: var(--vue-family-tree-line-style, solid);
+// Unmarried partners: dashed, or dotted on a dashed tree (set on the root), so they always stand out
+$partners-line-style: var(--vue-family-tree-partners-line-style, var(--_vft-partners-line-style, dashed));
+// Lines that carry meaning (the / and // marks, the unmarried partners' line) are darker than the plain connectors,
+// 4.5:1 against white, so they stay readable (WCAG non-text contrast)
+$mark-color: var(--vue-family-tree-mark-color, #767676);
+// Every position below is the line's 1px position; a wider line is pulled back by half its extra width, so it stays
+// centered on the same axis
+$line-shift: calc(($line-width - 1px) / 2);
+
+// Lines are borders of zero-size boxes rather than filled boxes, so dashed and dotted styles apply. The border stays
+// outside the box even under a global `* { box-sizing: border-box }`.
+@mixin vertical-line {
+  width: 0;
+  box-sizing: content-box;
+  border-inline-start: $line-width $line-style $line-color;
+}
+
+@mixin horizontal-line {
+  height: 0;
+  box-sizing: content-box;
+  border-top: $line-width $line-style $line-color;
+}
+
+// One genogram stroke across a relationship line (/ separated; two of them, // divorced), solid whatever the line
+// style. Positioned by the caller.
+@mixin mark {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 12px;
+  box-sizing: content-box;
+  border-inline-start: $line-width solid $mark-color;
+  transform: rotate(25deg);
+}

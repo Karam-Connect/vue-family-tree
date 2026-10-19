@@ -42,6 +42,9 @@ the list below compares it with that package.
   darker `--vue-family-tree-mark-color` (default `#767676`) for contrast. `start` / `end` dates on partnerships
   (and on the node for `secondPerson`) show above the line as `m. 1980 · div. 1996`. New labels: `married`,
   `separated`, `divorced` and `relationships`.
+- `VueFamilyTreeLegend`: a key to the relationship marks, the deceased symbol and placeholders, for touch and
+  keyboard users who can't see the tooltips. Given the tree's data and config, it lists only the symbols the tree
+  shows, in its line style and language. New `placeholder` label.
 - `config.partners.showFormer`: `false` hides all separated and divorced partners, with their children.
 - `hidden` on a `FamilyNode` or a `FamilyMember` skips that node (with its descendants) or person, and can be
   toggled at runtime ([upstream #4](https://github.com/walkerz88/vue-family-tree/issues/4)).
