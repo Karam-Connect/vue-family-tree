@@ -4,6 +4,7 @@
       class="vue-family-tree"
       :class="{ 'vue-family-tree_viewport': enableDrag }"
       @mousedown="mousedown"
+      @click.capture="clickCapture"
       @mouseover="unlessPanning(() => emit('mouseover', $event))"
       @mouseleave="unlessPanning(() => emit('mouseleave', $event))"
       @touchstart="touchstart"
@@ -138,6 +139,12 @@ const PAN_SETTLE_MS = 150;
 const panning = ref(false);
 const unlessPanning = (report: () => void) => {
   if (!panning.value) report();
+};
+// The same goes for links and buttons in a custom `card` slot: the click that ends a pan never reaches them
+const clickCapture = (event: MouseEvent) => {
+  if (!panning.value) return;
+  event.preventDefault();
+  event.stopPropagation();
 };
 
 // `auto` is resolved against the page, which only exists in the browser

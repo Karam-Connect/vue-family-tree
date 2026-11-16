@@ -127,6 +127,37 @@ describe('gesture-handling: cooperative', () => {
 
     expect(wrapper.emitted('card-click')).toBeUndefined()
   })
+
+  it('keeps the click that ends a pan from links in a custom card', async () => {
+    const followed = vi.fn()
+    const wrapper = mount(VueFamilyTree, {
+      props: { tree, config: { gestures: 'cooperative' } },
+      slots: { card: '<a href="#john" class="custom-link">John</a>' },
+      attachTo: document.body,
+    })
+    wrapper.element.addEventListener('click', followed)
+
+    touch(wrapper.element, 'touchstart', [[100, 100], [200, 100]])
+    touch(wrapper.element, 'touchmove', [[130, 100], [230, 100]])
+    touch(wrapper.element, 'touchend', [])
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true })
+    wrapper.find('.custom-link').element.dispatchEvent(click)
+
+    expect(click.defaultPrevented).toBe(true)
+    expect(followed).not.toHaveBeenCalled()
+  })
+
+  it('lets clicks through to a custom card when nothing was panned', async () => {
+    const wrapper = mount(VueFamilyTree, {
+      props: { tree },
+      slots: { card: '<a href="#john" class="custom-link">John</a>' },
+      attachTo: document.body,
+    })
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true })
+    wrapper.find('.custom-link').element.dispatchEvent(click)
+
+    expect(click.defaultPrevented).toBe(false)
+  })
 })
 
 describe('gesture-handling: greedy', () => {

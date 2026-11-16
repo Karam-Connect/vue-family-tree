@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Each person's slot (`.vue-family-tree__person`) carries `data-person-id` with the person's `id`; placeholders
   (unknown partners, people filtered out with `'card'`) don't.
 
+### Fixed
+
+- The click that ends a pan no longer reaches links or buttons in a custom `card` slot (the default card already
+  ignored it), so moving the tree never opens someone's page.
+
 ## [1.0.0] - 2026-10-16
 
 First release as `@karamconnect/vue-family-tree`, MIT licensed. Inspired by
