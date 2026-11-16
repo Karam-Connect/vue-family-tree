@@ -90,3 +90,56 @@ describe('centerOn', () => {
     expect(wrapper.emitted('center-map')).toBeUndefined()
   })
 })
+
+describe('keyboard panning and panBy', () => {
+  const key = (tree: VueWrapper, init: KeyboardEventInit) => {
+    const event = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init })
+    tree.element.dispatchEvent(event)
+    return event
+  }
+
+  it('makes the viewport one tab stop and pans with the arrow keys', async () => {
+    const tree = mountTree()
+    expect(tree.attributes('tabindex')).toBe('0')
+
+    expect(key(tree, { key: 'ArrowLeft' }).defaultPrevented).toBe(true)
+    key(tree, { key: 'ArrowUp', shiftKey: true })
+    await tree.vm.$nextTick()
+    // ArrowLeft brings the left side into view: the tree moves right
+    expect(transformOf(tree)).toBe('translate(40px, 160px) scale(1)')
+  })
+
+  it('zooms with + and -', async () => {
+    const tree = mountTree()
+    key(tree, { key: '+' })
+    key(tree, { key: '+' })
+    key(tree, { key: '-' })
+    expect(tree.emitted('zoom')).toHaveLength(3)
+  })
+
+  it('leaves keys on a card alone, and other keys to the page', () => {
+    const tree = mountTree()
+    const card = tree.find('.vue-family-card').element
+    const onCard = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true })
+    card.dispatchEvent(onCard)
+    expect(onCard.defaultPrevented).toBe(false)
+    expect(key(tree, { key: 'a' }).defaultPrevented).toBe(false)
+    expect(key(tree, { key: 'ArrowLeft', ctrlKey: true }).defaultPrevented).toBe(false)
+  })
+
+  it('is off without dragging, with gestures none, or with keyboard: false', () => {
+    for (const config of [{ drag: { enabled: false } }, { gestures: 'none' as const }, { keyboard: false }]) {
+      const tree = mountTree(config)
+      expect(tree.attributes('tabindex')).toBeUndefined()
+      expect(key(tree, { key: 'ArrowLeft' }).defaultPrevented).toBe(false)
+      tree.unmount()
+    }
+  })
+
+  it('panBy moves the tree by on-screen pixels', async () => {
+    const tree = mountTree()
+    ;(tree.vm as any).panBy(-30, 15)
+    await tree.vm.$nextTick()
+    expect(transformOf(tree)).toBe('translate(-30px, 15px) scale(1)')
+  })
+})

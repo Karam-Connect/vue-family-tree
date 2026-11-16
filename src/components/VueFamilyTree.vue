@@ -3,8 +3,10 @@
       ref="viewportEl"
       class="vue-family-tree"
       :class="{ 'vue-family-tree_viewport': enableDrag }"
+      :tabindex="keyboardPanning ? 0 : undefined"
       @mousedown="mousedown"
       @click.capture="clickCapture"
+      @keydown="keydown"
       @mouseover="unlessPanning(() => emit('mouseover', $event))"
       @mouseleave="unlessPanning(() => emit('mouseleave', $event))"
       @touchstart="touchstart"
@@ -80,6 +82,7 @@ const dragCursor = computed(() => props.config.drag?.cursor ?? 'grabbing');
 const dragThreshold = computed(() => props.config.drag?.threshold ?? 2);
 const gestureHandling = computed<GestureHandling>(() => props.config.gestures ?? 'auto');
 const zoom = computed<ZoomConfig>(() => props.config.zoom ?? {});
+const keyboardPanning = computed(() => enableDrag.value && props.config.keyboard !== false && gestureHandling.value !== 'none');
 
 const emit = defineEmits<{
   /** A card was clicked or activated with the keyboard (not at the end of a pan) */
@@ -262,6 +265,31 @@ const setZoom = (next: number, focal?: Position) => {
 
 const zoomIn = () => setZoom(scale.value + (zoom.value.step ?? 0.1));
 const zoomOut = () => setZoom(scale.value - (zoom.value.step ?? 0.1));
+
+/** Moves the tree by `x`, `y` pixels on screen (positive: right and down), for buttons or keys that pan without dragging */
+const panBy = (x: number, y: number) => {
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+  position.x += x;
+  position.y += y;
+};
+
+// Keyboard panning, an alternative to dragging: with the viewport focused, an arrow key brings that side of the tree
+// into view (the tree moves the other way), Shift for a bigger step; + and - zoom. Keys pressed on a card's own
+// controls inside are left to them.
+const KEY_STEP = 40;
+const keydown = (event: KeyboardEvent) => {
+  if (!keyboardPanning.value || event.target !== viewportEl.value || event.altKey || event.ctrlKey || event.metaKey) return;
+  const step = event.shiftKey ? KEY_STEP * 4 : KEY_STEP;
+  const moves: Record<string, [ number, number ]> = {
+    ArrowLeft: [ step, 0 ], ArrowRight: [ -step, 0 ], ArrowUp: [ 0, step ], ArrowDown: [ 0, -step ],
+  };
+  const move = moves[event.key];
+  if (move) panBy(...move);
+  else if (event.key === '+' || event.key === '=') zoomIn();
+  else if (event.key === '-' || event.key === '_') zoomOut();
+  else return;
+  event.preventDefault();
+};
 
 // Move/up are tracked on window so a drag keeps following the mouse outside the tree and ends wherever it's released
 const mousedown = (event: MouseEvent) => {
@@ -457,7 +485,7 @@ const centerOn = async (id: FamilyMember['id']) => {
   return true;
 };
 
-defineExpose({ centerOn, centerTree, getTreeClientRect, getWrapperClientRect, setZoom, zoomIn, zoomOut });
+defineExpose({ centerOn, panBy, centerTree, getTreeClientRect, getWrapperClientRect, setZoom, zoomIn, zoomOut });
 </script>
 
 <style lang="scss">
@@ -471,6 +499,12 @@ defineExpose({ centerOn, centerTree, getTreeClientRect, getWrapperClientRect, se
   width: 100%;
   height: 600px;
   overflow: hidden;
+}
+
+// The viewport takes focus for keyboard panning; the ring sits inside it, since it clips
+:where(.vue-family-tree_viewport):focus-visible {
+  outline: 2px solid;
+  outline-offset: -2px;
 }
 </style>
 

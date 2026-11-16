@@ -13,5 +13,7 @@ export const lineVariables = ({ lines = {}, cards }: Pick<FamilyTreeConfig, 'lin
   '--_vft-line-scale': lines.style === 'thick' ? 3 : undefined,
   // Unmarried partners: dotted on a dashed tree, so they still stand out
   '--_vft-partners-line-style': lines.style === 'dashed' ? 'dotted' : undefined,
+  // Co-parents with no recorded relationship: dashed on a dotted tree, for the same reason
+  '--_vft-coparents-line-style': lines.style === 'dotted' ? 'dashed' : undefined,
   '--vue-family-tree-card-width': cssLength(cards?.width),
 })

@@ -52,9 +52,10 @@ export interface FamilyNode {
 }
 
 /**
- * Status of a relationship between partners
+ * Status of a relationship between partners. `coparents` joins two parents of the same children when no relationship
+ * between them is known or recorded (drawn dotted, with no marriage or partnership implied).
  */
-export type RelationshipStatus = 'married' | 'partners' | 'separated' | 'divorced'
+export type RelationshipStatus = 'married' | 'partners' | 'separated' | 'divorced' | 'coparents'
 
 /**
  * An entry of `VueFamilyTreeLegend`: a relationship line, the deceased symbol, or the dashed placeholder of an
@@ -188,6 +189,11 @@ export interface FamilyTreeConfig {
         /** Pixels the mouse must move before a press becomes a drag (default: `2`) */
         threshold?: number
     }
+    /**
+     * Keyboard panning: the viewport takes focus (one tab stop) and the arrow keys move the tree, Shift for bigger
+     * steps, `+` / `-` zoom. Off when `drag.enabled` is `false` or `gestures` is `none` (default: `true`)
+     */
+    keyboard?: boolean
 }
 
 /**

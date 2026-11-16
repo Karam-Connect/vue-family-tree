@@ -109,6 +109,7 @@ Pass one object; anything you leave out keeps its default. It's reactive, so a `
 | `drag.enabled`        | Boolean          | `true`                            | Render inside a pannable, zoomable viewport. `false` renders the tree statically             |
 | `drag.cursor`         | String           | `grabbing`                        | Cursor while dragging                                                                        |
 | `drag.threshold`      | Number           | `2`                               | Pixels the mouse must move before a press becomes a drag (smaller moves stay clicks)         |
+| `keyboard`            | Boolean          | `true`                            | The viewport takes focus; arrow keys pan (Shift: bigger steps), `+` / `-` zoom. Needs dragging on |
 
 ### Partners
 
@@ -130,10 +131,12 @@ const yusuf: FamilyNode = {
 ```
 
 - **Order** follows the data, for example by date of marriage. Several current partners are fine.
-- **`relationship`** is `'married'` (default), `'partners'`, `'separated'` or `'divorced'`; set it on a partnership,
-  or on the node for the `secondPerson` union. The line shows it the genogram way: `/` across it for separated, `//`
-  for divorced, dashed for unmarried partners (dotted on a dashed tree; set
-  `--vue-family-tree-partners-line-style` to choose). These marks, the partners' line and the dashed outline of
+- **`relationship`** is `'married'` (default), `'partners'`, `'separated'`, `'divorced'` or `'coparents'`; set it on a
+  partnership, or on the node for the `secondPerson` union. The line shows it the genogram way: `/` across it for
+  separated, `//` for divorced, dashed for unmarried partners (dotted on a dashed tree; set
+  `--vue-family-tree-partners-line-style` to choose). `'coparents'` is for two parents of the same children when no
+  relationship between them is known: a dotted line (dashed on a dotted tree;
+  `--vue-family-tree-coparents-line-style`) that implies no marriage or partnership. These marks, the partners' line and the dashed outline of
   placeholders are drawn darker than the other lines (`#767676`, readable against white; set
   `--vue-family-tree-mark-color` to change it). Hovering the line
   shows the status name, which screen readers read too. Each union gets a `vue-family-tree__union_<relationship>` class.
@@ -263,7 +266,7 @@ tree actually shows, drawn in the same line style and named in the same language
 | `config` | `FamilyTreeConfig` | The tree's config: `labels` for the text, `lines` for the samples, `filter` and `partners`   |
 | `items`  | `LegendItem[]`     | Exactly these entries, in this order, instead of the ones found in `tree`                    |
 
-Without `tree` or `items` it lists everything. The entries are `'married'`, `'partners'`, `'separated'`,
+Without `tree` or `items` it lists everything. The entries are `'married'`, `'partners'`, `'coparents'`, `'separated'`,
 `'divorced'`, `'deceased'` (with the shapes the tree uses) and `'placeholder'` (the dashed box of an unknown partner or
 a person filtered out with `'card'`); their text comes from the `relationships`, `deceased` and `placeholder`
 [labels](#languages-and-rtl). The legend is a `<ul class="vue-family-legend">`; restyle it and its
@@ -288,7 +291,7 @@ simple prefixes, and functions give full control over wording, word order and di
 | `married`       | String (prefix) \| `(year) => String`            | `'m.'` → `m. 1980`                                                     |
 | `separated`     | String (prefix) \| `(year) => String`            | `'sep.'` → `sep. 1990`                                                 |
 | `divorced`      | String (prefix) \| `(year) => String`            | `'div.'` → `div. 1990`                                                 |
-| `relationships` | `{ married?, partners?, separated?, divorced? }` | `'Married'`, `'Partners'`, `'Separated'`, `'Divorced'` (line tooltips) |
+| `relationships` | `{ married?, partners?, separated?, divorced?, coparents? }` | `'Married'`, `'Partners'`, `'Separated'`, `'Divorced'`, `'Parents, no relationship recorded'` (line tooltips) |
 | `placeholder`   | String                                           | `'Unknown or not shown'` ([legend](#legend) text of the dashed box)    |
 | `touchHint`     | String                                           | `'Use two fingers to move the tree'`                                   |
 | `wheelHint`     | String \| `(key) => String`                      | `` key => `Use ${key} + scroll to zoom` `` (key is `⌘` or `Ctrl`)      |
@@ -412,6 +415,7 @@ Call via a template ref:
 |--------------------------|--------------------------------------------------------------------------------------------|
 | `centerTree()`           | Center the tree in the wrapper. Returns `Promise<boolean>`                                 |
 | `centerOn(id)`           | Center the card of the person with this `id`. Resolves `false` if they have no card        |
+| `panBy(x, y)`            | Move the tree by `x`, `y` pixels on screen, e.g. from your own arrow buttons               |
 | `zoomIn()` / `zoomOut()` | Zoom by `zoom.step` around the wrapper center                                              |
 | `setZoom(scale, focal?)` | Set the zoom level, keeping `focal` (`{x, y}` in wrapper pixels; default: center) in place |
 | `getTreeClientRect()`    | Tree's `DOMRect`                                                                           |

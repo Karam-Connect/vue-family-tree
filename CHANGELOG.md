@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose page the tree is shown on. Resolves `false` when that person has no card (hidden or filtered out).
 - Each person's slot (`.vue-family-tree__person`) carries `data-person-id` with the person's `id`; placeholders
   (unknown partners, people filtered out with `'card'`) don't.
+- `'coparents'` relationship status: two parents of the same children with no recorded relationship between them,
+  drawn as a dotted line (dashed on a dotted tree, `--vue-family-tree-coparents-line-style`) with its own legend entry
+  and label (`labels.relationships.coparents`), so a family can show both parents without implying a partnership.
+- Keyboard panning, an alternative to dragging: the viewport is one tab stop; arrow keys pan (Shift for bigger steps)
+  and `+` / `-` zoom. `config.keyboard: false` turns it off. `panBy(x, y)` moves the tree from your own controls.
 
 ### Fixed
 
