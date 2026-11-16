@@ -400,7 +400,7 @@ Mouse drag always pans (unless `none`).
 | drag       | `MouseEvent \| TouchEvent` | Tree moved                                                                                           |
 | dragend    | `MouseEvent \| TouchEvent` | Pan ended                                                                                            |
 | zoom       | `number`                   | Zoom level changed                                                                                   |
-| center-map | –                          | `centerTree()` finished                                                                              |
+| center-map | –                          | `centerTree()` or `centerOn()` finished                                                              |
 | mouseover  | `MouseEvent`               | Mouse over the tree (not emitted while dragging)                                                     |
 | mouseleave | `MouseEvent`               | Mouse left the tree (not emitted while dragging)                                                     |
 
@@ -411,6 +411,7 @@ Call via a template ref:
 | Method                   | Description                                                                                |
 |--------------------------|--------------------------------------------------------------------------------------------|
 | `centerTree()`           | Center the tree in the wrapper. Returns `Promise<boolean>`                                 |
+| `centerOn(id)`           | Center the card of the person with this `id`. Resolves `false` if they have no card        |
 | `zoomIn()` / `zoomOut()` | Zoom by `zoom.step` around the wrapper center                                              |
 | `setZoom(scale, focal?)` | Set the zoom level, keeping `focal` (`{x, y}` in wrapper pixels; default: center) in place |
 | `getTreeClientRect()`    | Tree's `DOMRect`                                                                           |

@@ -434,7 +434,23 @@ const centerTree = async () => {
   return true;
 };
 
-defineExpose({ centerTree, getTreeClientRect, getWrapperClientRect, setZoom, zoomIn, zoomOut });
+/**
+ * Moves the tree so the card of the person with this `id` is in the middle of the viewport (a filtered-out or hidden
+ * person has no card). Resolves `false` when there is no such card or the component hasn't rendered.
+ */
+const centerOn = async (id: FamilyMember['id']) => {
+  const viewport = getWrapperClientRect();
+  const card = [ ...(contentEl.value?.querySelectorAll<HTMLElement>('[data-person-id]') ?? []) ]
+      .find(element => element.dataset.personId === String(id));
+  if (!viewport || !card) return false;
+  const box = card.getBoundingClientRect();
+  position.x += viewport.left + viewport.width / 2 - (box.left + box.width / 2);
+  position.y += viewport.top + viewport.height / 2 - (box.top + box.height / 2);
+  emit('center-map');
+  return true;
+};
+
+defineExpose({ centerOn, centerTree, getTreeClientRect, getWrapperClientRect, setZoom, zoomIn, zoomOut });
 </script>
 
 <style lang="scss">

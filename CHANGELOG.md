@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `centerOn(id)` method: pans the tree so one person's card is in the middle of the viewport, for example the person
+  whose page the tree is shown on. Resolves `false` when that person has no card (hidden or filtered out).
+- Each person's slot (`.vue-family-tree__person`) carries `data-person-id` with the person's `id`; placeholders
+  (unknown partners, people filtered out with `'card'`) don't.
+
 ## [1.0.0] - 2026-10-16
 
 First release as `@karamconnect/vue-family-tree`, MIT licensed. Inspired by
