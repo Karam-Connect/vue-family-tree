@@ -84,6 +84,28 @@ describe('centerOn', () => {
     expect(wrapper.emitted('center-map')).toHaveLength(1)
   })
 
+  it('measures the card after a zoom made just before is rendered', async () => {
+    wrapper = mount(VueFamilyTree, { props: { tree: family }, attachTo: document.body })
+    wrapper.element.getBoundingClientRect = () => rect(0, 0, 400, 300)
+    const content = wrapper.element.firstElementChild as HTMLElement
+    // Grace's card sits at (500, 400) in the tree, 100 x 120, wherever the transform the DOM shows puts it
+    const grace = wrapper.find('[data-person-id="3"]').element
+    grace.getBoundingClientRect = () => {
+      const [, x, y, s] = content.style.transform.match(/translate\((-?[\d.]+)px, (-?[\d.]+)px\) scale\(([\d.]+)\)/)!.map(Number)
+      return rect(x! + 500 * s!, y! + 400 * s!, 100 * s!, 120 * s!)
+    }
+
+    const vm = wrapper.vm as any
+    vm.setZoom(2)
+    expect(await vm.centerOn(3)).toBe(true)
+    await wrapper.vm.$nextTick()
+
+    const box = grace.getBoundingClientRect()
+    expect(box.width).toBe(200)
+    expect(box.left + box.width / 2).toBe(200)
+    expect(box.top + box.height / 2).toBe(150)
+  })
+
   it('resolves false for someone without a card', async () => {
     wrapper = mount(VueFamilyTree, { props: { tree: family }, attachTo: document.body })
     expect(await (wrapper.vm as any).centerOn('nobody')).toBe(false)

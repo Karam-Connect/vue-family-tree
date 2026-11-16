@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, provide, onMounted, onBeforeUnmount } from 'vue';
+import { ref, reactive, computed, watch, provide, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import VueFamilyTreeBranch from './components/Branch.vue';
 import { cardStyleKey, filterKey, labelsKey, partnersKey } from './keys';
 import { resolveLabels } from './member';
@@ -474,6 +474,8 @@ const centerTree = async () => {
  * person has no card). Resolves `false` when there is no such card or the component hasn't rendered.
  */
 const centerOn = async (id: FamilyMember['id']) => {
+  // Measure the card as drawn: a zoom or pan just before (setZoom(2), then centerOn) is only rendered on the next tick
+  await nextTick();
   const viewport = getWrapperClientRect();
   const card = [ ...(contentEl.value?.querySelectorAll<HTMLElement>('[data-person-id]') ?? []) ]
       .find(element => element.dataset.personId === String(id));
