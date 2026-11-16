@@ -13,13 +13,13 @@
   ],
   "author": "Gabriel Sheeley",
   "license": "MIT",
-  "homepage": "https://github.com/karamconnect/vue-family-tree",
+  "homepage": "https://github.com/Karam-Connect/vue-family-tree",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/karamconnect/vue-family-tree.git"
+    "url": "git+https://github.com/Karam-Connect/vue-family-tree.git"
   },
   "bugs": {
-    "url": "https://github.com/karamconnect/vue-family-tree/issues"
+    "url": "https://github.com/Karam-Connect/vue-family-tree/issues"
   },
   "private": false,
   "type": "module",
