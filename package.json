@@ -1,6 +1,6 @@
 {
   "name": "@karamconnect/vue-family-tree",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Vue 3 component for rendering interactive, draggable family trees",
   "keywords": [
     "vue",

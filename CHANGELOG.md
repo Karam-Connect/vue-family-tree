@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-16
+
 ### Added
 
 - `centerOn(id)` method: pans the tree so one person's card is in the middle of the viewport, for example the person
@@ -107,4 +109,5 @@ the list below compares it with that package.
 - `enable-drag`, `drag-cursor` and `mouse-change-diff` props. Use `config.drag.enabled`, `config.drag.cursor` and
   `config.drag.threshold` instead.
 
+[1.1.0]: https://github.com/Karam-Connect/vue-family-tree/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Karam-Connect/vue-family-tree/releases/tag/v1.0.0
