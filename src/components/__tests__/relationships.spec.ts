@@ -64,6 +64,31 @@ describe('relationships', () => {
     expect(style({ lines: { style: 'dashed' } })).toBe('dotted')
     expect(style({ lines: { style: 'dotted' } })).toBe('')
   })
+
+  it('joins co-parents with no recorded relationship, without dates or marks implying one', () => {
+    const tree: FamilyNode[] = [{
+      firstPerson: p('Dina'),
+      secondPerson: p('Karim'),
+      relationship: 'coparents',
+      children: [{ firstPerson: p('Rami') }],
+    }]
+    const wrapper = mount(VueFamilyTree, { props: { tree } })
+    const union = wrapper.find('.vue-family-tree__union_coparents')
+
+    expect(union.exists()).toBe(true)
+    expect(union.find('.vue-family-tree__union-status').attributes('title')).toBe('Parents, no relationship recorded')
+    expect(union.find('.vue-family-tree__union-dates').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Rami')
+  })
+
+  it('draws co-parents dashed on a dotted tree', () => {
+    const style = (config: FamilyTreeConfig) =>
+      (mount(VueFamilyTree, { props: { tree: [yusuf()], config } }).element as HTMLElement)
+        .style.getPropertyValue('--_vft-coparents-line-style')
+
+    expect(style({ lines: { style: 'dotted' } })).toBe('dashed')
+    expect(style({ lines: { style: 'dashed' } })).toBe('')
+  })
 })
 
 describe('unionDates', () => {
@@ -74,6 +99,7 @@ describe('unionDates', () => {
     expect(unionDates({ end: 2010 })).toBe('m. ?–2010')
     expect(unionDates({ relationship: 'partners', start: 2001, end: 2005 })).toBe('2001–2005')
     expect(unionDates({ relationship: 'partners', end: 2005 })).toBe('?–2005')
+    expect(unionDates({ relationship: 'coparents', start: 2001 })).toBe('2001–')
     expect(unionDates({ relationship: 'separated', start: 1980, end: 1990 })).toBe('m. 1980 · sep. 1990')
     expect(unionDates({ relationship: 'divorced', start: 'c. 1980' })).toBe('m. ⁨c. 1980⁩')
   })

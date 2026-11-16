@@ -355,6 +355,11 @@ $couple-line-top: var(--vue-family-tree-couple-line-top, calc(#{$card-width} / 2
     border-top-color: $mark-color;
   }
 
+  .vue-family-tree__union_coparents > &::before {
+    border-top-style: $coparents-line-style;
+    border-top-color: $mark-color;
+  }
+
   .vue-family-tree__union_children > & {
     --_vft-mark-at: 75%;
   }

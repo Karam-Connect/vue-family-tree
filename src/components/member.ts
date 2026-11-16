@@ -8,7 +8,10 @@ export const defaultLabels = {
   married: 'm.',
   separated: 'sep.',
   divorced: 'div.',
-  relationships: { married: 'Married', partners: 'Partners', separated: 'Separated', divorced: 'Divorced' },
+  relationships: {
+    married: 'Married', partners: 'Partners', separated: 'Separated', divorced: 'Divorced',
+    coparents: 'Parents, no relationship recorded',
+  },
   placeholder: 'Unknown or not shown',
   touchHint: 'Use two fingers to move the tree',
   wheelHint: (key: string) => `Use ${key} + scroll to zoom`,
@@ -72,7 +75,7 @@ export const unionDates = (
   const from = present(start) ? year(start) : undefined
   const to = present(end) ? year(end) : undefined
   if (!from && !to) return ''
-  if (relationship === 'partners') return labels.lifespan(from ?? '?', to ?? '')
+  if (relationship === 'partners' || relationship === 'coparents') return labels.lifespan(from ?? '?', to ?? '')
   if (relationship === 'married') return single(labels.married, to ? labels.lifespan(from ?? '?', to) : from!)
   const ended = relationship === 'separated' ? labels.separated : labels.divorced
   return [from && single(labels.married, from), to && single(ended, to)].filter(Boolean).join(' · ')

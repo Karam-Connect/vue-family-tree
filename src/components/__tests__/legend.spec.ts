@@ -18,9 +18,10 @@ describe('legendOf', () => {
       partners: [
         { person: person('b', { gender: 'male', deceased: true }), relationship: 'divorced' },
         { person: person('c'), relationship: 'partners' },
+        { person: person('e'), relationship: 'coparents' },
       ],
     }]
-    expect(legendOf(tree)).toEqual({ items: ['partners', 'divorced', 'deceased'], shapes: ['square', 'circle'] })
+    expect(legendOf(tree)).toEqual({ items: ['partners', 'coparents', 'divorced', 'deceased'], shapes: ['square', 'circle'] })
   })
 
   it('looks through descendants and ignores single people', () => {
@@ -85,7 +86,7 @@ describe('VueFamilyTreeLegend', () => {
     const wrapper = mount(VueFamilyTreeLegend)
 
     expect(texts(wrapper)).toEqual(
-      ['Married', 'Partners', 'Separated', 'Divorced', 'Deceased', 'Unknown or not shown'])
+      ['Married', 'Partners', 'Parents, no relationship recorded', 'Separated', 'Divorced', 'Deceased', 'Unknown or not shown'])
     expect(wrapper.findAll('.vue-family-card__symbol')).toHaveLength(3)
   })
 

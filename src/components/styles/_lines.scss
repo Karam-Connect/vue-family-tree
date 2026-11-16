@@ -6,6 +6,8 @@ $line-width: calc(var(--vue-family-tree-line-width, 1px) * var(--_vft-line-scale
 $line-style: var(--vue-family-tree-line-style, solid);
 // Unmarried partners: dashed, or dotted on a dashed tree (set on the root), so they always stand out
 $partners-line-style: var(--vue-family-tree-partners-line-style, var(--_vft-partners-line-style, dashed));
+// Co-parents with no recorded relationship: dotted, or dashed on a dotted tree
+$coparents-line-style: var(--vue-family-tree-coparents-line-style, var(--_vft-coparents-line-style, dotted));
 // Lines that carry meaning (the / and // marks, the unmarried partners' line) are darker than the plain connectors,
 // 4.5:1 against white, so they stay readable (WCAG non-text contrast)
 $mark-color: var(--vue-family-tree-mark-color, #767676);

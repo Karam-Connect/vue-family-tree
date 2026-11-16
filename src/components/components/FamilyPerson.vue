@@ -1,6 +1,7 @@
 <template>
   <div
       class="vue-family-tree__person"
+      :data-person-id="placeholder || unknown ? undefined : person.id"
       :class="{
         'vue-family-tree__person_deceased': !unknown && isDeceased(person),
         'vue-family-tree__person_filtered': placeholder,

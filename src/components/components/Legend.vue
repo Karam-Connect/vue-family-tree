@@ -122,6 +122,11 @@ const textOf = (item: LegendItem) => {
   border-top-color: $mark-color;
 }
 
+:where(.vue-family-legend__line_coparents)::before {
+  border-top-style: $coparents-line-style;
+  border-top-color: $mark-color;
+}
+
 // The genogram marks: / separated, // divorced
 :where(.vue-family-legend__marks) {
   position: absolute;

@@ -3,7 +3,7 @@ import { isDeceased, symbolShape } from './member'
 import { isChain, visibility, type VisibilityOptions } from './visibility'
 
 /** Every legend entry, in the order the legend lists them */
-export const legendItemOrder: LegendItem[] = ['married', 'partners', 'separated', 'divorced', 'deceased', 'placeholder']
+export const legendItemOrder: LegendItem[] = ['married', 'partners', 'coparents', 'separated', 'divorced', 'deceased', 'placeholder']
 
 const shapeOrder = ['square', 'circle', 'diamond'] as const
 export type SymbolShape = typeof shapeOrder[number]
